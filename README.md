@@ -1,6 +1,12 @@
 # 无线汽车OBD仪表主机端 (STM32 + ESP-01)
 
-基于 **STM32F103C8T6** 与 **ESP-01 WiFi模块** 的无线汽车OBD2仪表数据采集主机。通过CAN总线连接车辆OBD2接口，实时读取发动机运行数据，并以兼容 `car111plus` 的帧格式通过串口/WiFi无线输出，可供上位机或手机App显示。
+基于 **STM32F103C8T6** 与 **ESP-01 WiFi模块** 的无线汽车OBD2仪表数据采集主机。通过CAN总线连接车辆OBD2接口，实时读取发动机运行数据，并以兼容 [STM32-OBD2-WiFi-Dashboard](https://github.com/htc-01/STM32-OBD2-WiFi-Dashboard) 的帧格式通过串口/WiFi无线输出，可供上位机或手机App显示。
+
+> 🚗 **系统定位**：
+> - 本仓库 **STM32-OBD2-WiFi-Bridge** → **主机**：负责 CAN/OBD2 数据采集，可通过 WiFi 透传或串口输出文本帧。
+> - [esp-now-obd-host](https://github.com/htc-01/esp-now-obd-host) → **ESP-NOW 发送端**：可选方案，将本主机的串口文本帧转为 ESP-NOW 二进制帧无线发送。
+> - [ESP-01S-OBD-Dashboard-Receiver](https://github.com/htc-01/ESP-01S-OBD-Dashboard-Receiver) → **ESP-NOW 接收端**：与发送端配对，把 ESP-NOW 帧还原为串口文本帧。
+> - [STM32-OBD2-WiFi-Dashboard](https://github.com/htc-01/STM32-OBD2-WiFi-Dashboard) → **显示从机**：接收文本帧并驱动 GC9A01 圆屏显示。
 
 ---
 
@@ -87,7 +93,7 @@
 
 ## 🔌 通信协议
 
-### 串口/WiFi输出帧格式（兼容 car111plus）
+### 串口/WiFi输出帧格式（兼容 STM32-OBD2-WiFi-Dashboard）
 
 ```
 [LOAD=<负载> TMP=<温度> RPM=<转速> SPD=<车速> MAF=<空流> THR=<节气门>]
@@ -196,8 +202,10 @@ OBD2_IDLE  ──发送PID──►  OBD2_WAITING
 
 ## 🤝 关联项目
 
-- **显示端/上位机**：可配合 `car111plus` 兼容格式的串口仪表APP或网页Dashboard使用
-- **ESP-01固件**：需要ESP端运行透传程序（AT固件或自定义UDP/TCP透传固件）
+- **[STM32-OBD2-WiFi-Dashboard](https://github.com/htc-01/STM32-OBD2-WiFi-Dashboard)**：基于 STM32F401 + GC9A01 圆屏 + LVGL 的无线 OBD 仪表显示从机，与本主机通过 WiFi/串口文本帧对接。
+- **[esp-now-obd-host](https://github.com/htc-01/esp-now-obd-host)**：ESP-01S 上的 ESP-NOW 发送端固件，可把本主机的串口文本帧转为二进制无线帧发送。
+- **[ESP-01S-OBD-Dashboard-Receiver](https://github.com/htc-01/ESP-01S-OBD-Dashboard-Receiver)**：ESP-01S 上的 ESP-NOW 接收端固件，与 `esp-now-obd-host` 配对，把无线帧还原为串口文本帧给显示端。
+- **ESP-01 透传固件**：若使用传统 WiFi 透传方案，需要 ESP 端运行 AT 固件或自定义 UDP/TCP 透传程序。
 
 ---
 
